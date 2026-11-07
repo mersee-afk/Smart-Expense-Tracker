@@ -1,4 +1,6 @@
 import csv
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from datetime import datetime
 from collections import defaultdict
@@ -74,27 +76,32 @@ def show_report():
     for cat, amt in cat_total.items():
         print(f"  {cat}: ₹{amt:.2f}")
 
+
 def show_chart():
     data = load_data()
+
     if not data:
         print("No expenses to show.")
         return
-    
+
     cats = defaultdict(float)
+
     for row in data:
         if len(row) >= 3:
             cats[row[1].title()] += float(row[2])
 
+    fig, ax = plt.subplots()
 
-    plt.bar(cats.keys(), cats.values())
-    plt.title("Expense Breakdown")
-    plt.ylabel("₹ Amount")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    
-    plt.savefig('expenses.png', dpi=300, bbox_inches='tight')
-    print("📊 Chart saved as expenses.png")
-    plt.show()
+    ax.bar(list(cats.keys()), list(cats.values()))
+    ax.set_title("Expense Breakdown")
+    ax.set_ylabel("₹ Amount")
+    ax.tick_params(axis="x", labelrotation=45)
+
+    fig.savefig("expenses.png", dpi=150)
+    plt.close(fig)
+
+    print("Chart saved successfully as expenses.png")
+
 
 
 while True:
